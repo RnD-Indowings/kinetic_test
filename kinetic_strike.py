@@ -103,11 +103,6 @@ async def run():
             print("-- Global position estimate OK")
             break
 
-    print("-- Arming")
-    await drone.action.arm()
-
-    print("-- Taking off")
-    await drone.action.takeoff()
 
     print("-- Waiting for drone to reach sufficient altitude")
     async for position in drone.telemetry.position():
@@ -119,9 +114,9 @@ async def run():
 
 
     # Target locations
-    lat = True
-    lon = True
-    target_altitude = -10  # in meters
+    lat = float(sys.argv[1]) 
+    lon = float(sys.argv[2]) 
+    target_altitude = -20  # in meters
 
     # Get current position
     current_lat = position.latitude_deg
