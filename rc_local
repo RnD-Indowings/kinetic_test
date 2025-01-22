@@ -1,0 +1,18 @@
+
+!/bin/sh -e
+#
+# By default this script does nothing.
+exec > /tmp/rc-local.out 2>&1;set -x
+
+# Print the IP address
+_IP=$(hostname -I) || true
+if [ "$_IP" ]; then
+  printf "My IP address is %s\n" "$_IP"
+fi
+
+
+#echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device
+#sudo hwclock -s
+
+sh /home/indowings/startup.sh &
+exit 0
