@@ -1,5 +1,6 @@
+#!/bin/bash
 
-!/bin/sh -e
+#!/bin/sh -e
 #
 # By default this script does nothing.
 exec > /tmp/rc-local.out 2>&1;set -x
@@ -14,5 +15,5 @@ fi
 #echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device
 #sudo hwclock -s
 
-sh /home//startup.sh &
+sh /home/nx-orin-indowings-1/yolov5/startup.sh &
 exit 0
