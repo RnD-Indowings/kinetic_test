@@ -6,8 +6,11 @@ import threading
 from localization import main
 import os
 import sys
+import time
 from connect import connect_to_px4 , get_gps_data
 connection_gps = connect_to_px4('127.0.0.1:14550')
+
+time.sleep(5)
 
 
 # Global variables for midpoints
@@ -90,7 +93,7 @@ async def run():
     drone = System()
     await drone.connect(system_address="serial:///dev/ttyACM0:1152000")
     speed_task = asyncio.ensure_future(print_current_speed(drone))
-
+    '''
     print("Waiting for drone to connect...")
     async for state in drone.core.connection_state():
         if state.is_connected:
@@ -101,7 +104,7 @@ async def run():
     async for health in drone.telemetry.health():
         if health.is_global_position_ok and health.is_home_position_ok:
             print("-- Global position estimate OK")
-            break
+            break'''
 
 
     print("-- Waiting for drone to reach sufficient altitude")
@@ -116,7 +119,7 @@ async def run():
     # Target locations
     lat = float(sys.argv[1]) 
     lon = float(sys.argv[2]) 
-    target_altitude = -20  # in meters
+    target_altitude = -32  # in meters
 
     # Get current position
     current_lat = position.latitude_deg
