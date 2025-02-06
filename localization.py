@@ -12,13 +12,11 @@ connection_gps = connect_to_px4('udp:127.0.0.1:14550')
 
 CHANNEL_9_THRESHOLD = 1500 
 RADIUS_EARTH = 6378  # Mean radius of the Earth in km
-RADIUS_EARTH_METERS = RADIUS_EARTH * 1000  # Convert to meters for more precise calculations
-
-# Terminal lock to avoid simultaneous terminal opens
+RADIUS_EARTH_METERS = RADIUS_EARTH * 1000 
 terminal_opened = False
 lock = threading.Lock()
 
-# Function to get GPS data
+#GPS
 def get_gps_data(connection):
     connection.mav.request_data_stream_send(connection.target_system, connection.target_component, mavutil.mavlink.MAV_DATA_STREAM_POSITION, 1, 1)
     msg = connection.recv_match(type='GPS_RAW_INT', blocking=True)
@@ -29,38 +27,32 @@ def get_gps_data(connection):
     else:
         return None, None
     
-# Function to calculate FOV
+#FOV - (OPTIONAL)
 def calculate_fov(sensor_width, sensor_height, focal_length_x, focal_length_y):
     fov_x = 2 * math.atan((sensor_width / 2) / focal_length_x)
     fov_y = 2 * math.atan((sensor_height / 2) / focal_length_y)
     return fov_x, fov_y
 
+#INCLINED DISTANCE CALC
 def calculate_inclined_distance(altitude, pitch_angle):
     alpha = 90 - pitch_angle  # Inclined angle (alpha) is 90 - pitch angle
     alpha_rad = math.radians(alpha)
     Y = altitude / math.sin(alpha_rad)
     return Y
-
+#HORIZONTAL DISTANCE CALCULATION
 def calculate_horizontal_distance(altitude, Y):
     # Calculate X using the Pythagorean theorem: X = sqrt(Y^2 - altitude^2)
     X = math.sqrt(Y**2 - altitude**2)
     return X
 
-
+#MAIN
 def main():
-    if len(sys.argv) != 3:
-        print("Usage: python3 detect.py <frame_centre_x> <frame_centre_y>")
-        sys.exit(1)
 
-    # 1. FROM DETECT.PY
-    center_x = int(sys.argv[1])  # Argument 1
-    center_y = int(sys.argv[2])  # Argument 2
-    print(f"Received Pixel: ({center_x}, {center_y})")
 
     # 2. FOR CONNECTING THE DRONE AND GETTING THE LIVE GPS LAT LON OF THE DRONE + GETTING YAW and ALT
     connection_string = 'udp:127.0.0.1:14550'
     px4_connection = connect_to_px4(connection_string)
-    vehicle = connect('127.0.0.1:14567', wait_ready=True)
+    vehicle = connect('127.0.0.1:14569', wait_ready=True)
     
     
     if px4_connection:
@@ -79,7 +71,11 @@ def main():
         print(f"Camera FOV: Horizontal = {math.degrees(fov_x):.2f}°, Vertical = {math.degrees(fov_y):.2f}°")
 
         # 4. DISTANCE CALC Y and X
-        pitch_angle = 75 
+        #gimbal = vehicle.gimbal
+        #pitch_angle = gimbal.pitch
+        #print(f" Pitch: {pitch_angle}°")
+        pitch_angle = 45 
+        print(f" Pitch: {pitch_angle}°")
         altitude = 300
         #altitude = vehicle.location.global_relative_frame.alt
         print(f"Altitude: {altitude}")
