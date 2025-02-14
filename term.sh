@@ -3,20 +3,22 @@
 previous_pid=""
 
 while true; do
-    # Open a new terminal and capture its PID
+    # Launch a new GNOME terminal
     gnome-terminal &
-    new_terminal_pid=$!
 
     # Wait 2 seconds to ensure the new terminal has started
     sleep 2
 
-    # Kill the previous terminal only if it exists
-    if [[ ! -z "$previous_pid" ]]; then
+    # Get the most recently opened terminal's PID
+    new_pid=$(pgrep -n gnome-terminal)
+
+    # Kill the previous terminal only after the new one is running
+    if [[ ! -z "$previous_pid" && "$previous_pid" != "$new_pid" ]]; then
         kill "$previous_pid" 2>/dev/null
     fi
 
     # Store the new terminal's PID for the next iteration
-    previous_pid=$new_terminal_pid
+    previous_pid=$new_pid
 
     # Wait for 60 seconds before repeating
     sleep 60
